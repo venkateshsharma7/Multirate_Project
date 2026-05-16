@@ -1,0 +1,71 @@
+{
+  "ecg": {
+    "haar-L2": {
+      "compression_ratio": 3.6327,
+      "mse": 5.4e-05,
+      "avg_reward": 2.1777
+    },
+    "db4-L3": {
+      "compression_ratio": 6.4385,
+      "mse": 8e-05,
+      "avg_reward": 3.8603
+    },
+    "sym4-L4": {
+      "compression_ratio": 10.7164,
+      "mse": 0.000207,
+      "avg_reward": 6.4226
+    },
+    "RL agent": {
+      "compression_ratio": 12.842,
+      "mse": 0.000292,
+      "avg_reward": 7.695,
+      "action": "haar-L4-soft"
+    }
+  },
+  "accelerometer": {
+    "haar-L2": {
+      "compression_ratio": 1.8678,
+      "mse": 0.00011,
+      "avg_reward": 1.1168
+    },
+    "db4-L3": {
+      "compression_ratio": 2.2939,
+      "mse": 0.000135,
+      "avg_reward": 1.3716
+    },
+    "sym4-L4": {
+      "compression_ratio": 2.4909,
+      "mse": 0.000144,
+      "avg_reward": 1.4895
+    },
+    "RL agent": {
+      "compression_ratio": 2.2939,
+      "mse": 4.8e-05,
+      "avg_reward": 1.3746,
+      "action": "db4-L3-hard"
+    }
+  },
+  "temperature": {
+    "haar-L2": {
+      "compression_ratio": 1.9268,
+      "mse": 0.00028,
+      "avg_reward": 1.1463
+    },
+    "db4-L3": {
+      "compression_ratio": 2.4391,
+      "mse": 0.00038,
+      "avg_reward": 1.4501
+    },
+    "sym4-L4": {
+      "compression_ratio": 2.7234,
+      "mse": 0.000396,
+      "avg_reward": 1.6202
+    },
+    "RL agent": {
+      "compression_ratio": 2.3409,
+      "mse": 0.000129,
+      "avg_reward": 1.4001,
+      "action": "sym4-L3-hard"
+    }
+  }
+}
