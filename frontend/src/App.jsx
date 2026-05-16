@@ -17,7 +17,6 @@ const SIGNAL_LABEL = {
   temperature: "Temperature",
 };
 
-// Responsive Stat Card
 function StatCard({ label, value, unit = "", accent, bg = "#111" }) {
   return (
     <div className="stat-card" style={{
@@ -39,7 +38,6 @@ function StatCard({ label, value, unit = "", accent, bg = "#111" }) {
   );
 }
 
-// Visual Progress Bar for Epsilon
 function EpsilonGauge({ value }) {
   const percent = typeof value === 'number' ? value * 100 : 0;
   return (
@@ -140,7 +138,6 @@ export default function App() {
         button:hover { filter: brightness(1.2); }
         button:active { transform: scale(0.98); }
 
-        /* Responsive Layout Grid */
         .app-container { height: 100vh; display: flex; flex-direction: column; padding: 24px; overflow: hidden; }
         .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
         .app-main { display: flex; gap: 24px; flex: 1; min-height: 0; }
@@ -148,22 +145,22 @@ export default function App() {
         .app-content { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; overflow-y: auto; padding-right: 4px; }
         .app-stats { display: flex; gap: 16px; flex-shrink: 0; }
         .stat-card { flex: 1; }
-        .chart-box { flex: 1; min-height: 220px; background: #111; border: 1px solid #222; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; position: relative; }
+        
+        /* Removed rigid height locks to allow proper flex expansion */
+        .chart-box { background: #111; border: 1px solid #222; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; position: relative; }
 
-        /* Mobile Breakpoints */
         @media (max-width: 900px) {
           .app-container { height: auto; min-height: 100vh; overflow-y: auto; padding: 16px; }
           .app-main { flex-direction: column; height: auto; overflow: visible; }
           .app-sidebar { width: 100%; overflow: visible; padding-right: 0; }
           .app-content { overflow: visible; padding-right: 0; }
           .app-stats { flex-wrap: wrap; }
-          .stat-card { flex: 1 1 calc(50% - 16px); } /* 2x2 grid on tablets */
-          .chart-box { min-height: 300px; }
+          .stat-card { flex: 1 1 calc(50% - 16px); } 
         }
 
         @media (max-width: 550px) {
           .app-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-          .stat-card { flex: 1 1 100%; } /* Full width vertical stack on phones */
+          .stat-card { flex: 1 1 100%; } 
           .action-buttons { flex-direction: column; }
           .action-buttons button { width: 100%; }
         }
@@ -189,10 +186,8 @@ export default function App() {
       {/* Main App Grid */}
       <main className="app-main">
         
-        {/* Left Sidebar (Controls & Context) */}
+        {/* Left Sidebar */}
         <aside className="app-sidebar">
-          
-          {/* Signal Selector */}
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, marginBottom: 20 }}>
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Data Modality</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -230,7 +225,6 @@ export default function App() {
 
           <EpsilonGauge value={stats.epsilon} />
 
-          {/* Action Log */}
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, minHeight: 180, display: "flex", flexDirection: "column" }}>
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Agent Decision Log</div>
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -246,10 +240,9 @@ export default function App() {
           </div>
         </aside>
 
-        {/* Right Content Area (Charts & Stats) */}
+        {/* Right Content Area */}
         <section className="app-content">
           
-          {/* Top Stats Row */}
           <div className="app-stats">
             <StatCard label="Compression Ratio" value={stats.compression_ratio} unit="×" accent={accent} />
             <StatCard label="Mean Squared Error" value={stats.reconstruction_error} accent="#aaa" />
@@ -258,9 +251,10 @@ export default function App() {
           </div>
 
           {/* Signal Chart Container */}
-          <div className="chart-box">
+          <div className="chart-box" style={{ flex: 1.5 }}>
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Real-time Signal Reconstruction</div>
-            <div style={{ flex: 1, minHeight: 0 }}>
+            {/* FORCE EXPLICIT HEIGHT HERE FOR RECHARTS ON MOBILE */}
+            <div style={{ width: "100%", height: 280, position: "relative" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={signalData} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
@@ -276,9 +270,10 @@ export default function App() {
           </div>
 
           {/* Reward Chart Container */}
-          <div className="chart-box">
+          <div className="chart-box" style={{ flex: 1 }}>
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Q-Learning Convergence</div>
-            <div style={{ flex: 1, minHeight: 0 }}>
+            {/* FORCE EXPLICIT HEIGHT HERE FOR RECHARTS ON MOBILE */}
+            <div style={{ width: "100%", height: 280, position: "relative" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={rewardData} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
