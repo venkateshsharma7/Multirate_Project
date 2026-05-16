@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: multirate-project
+    env: docker
+    repo: https://github.com/venkateshsharma7/Multirate_Project.git
+    branch: main
+    dockerfilePath: Dockerfile
+    plan: free
+    autoDeploy: true
