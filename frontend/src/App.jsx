@@ -6,9 +6,9 @@ const API = "/api";
 const SIGNALS = ["ecg", "accelerometer", "temperature"];
 
 const SIGNAL_COLOR = {
-  ecg: "#ff4d4d",        // Brighter neon red
-  accelerometer: "#3399ff", // Brighter neon blue
-  temperature: "#ffcc00",   // Brighter neon yellow
+  ecg: "#ff4d4d",        
+  accelerometer: "#3399ff", 
+  temperature: "#ffcc00",   
 };
 
 const SIGNAL_LABEL = {
@@ -17,15 +17,14 @@ const SIGNAL_LABEL = {
   temperature: "Temperature",
 };
 
-// Sleeker Stat Card
+// Responsive Stat Card
 function StatCard({ label, value, unit = "", accent, bg = "#111" }) {
   return (
-    <div style={{
+    <div className="stat-card" style={{
       background: bg,
       border: `1px solid ${accent}22`,
       borderRadius: 12,
       padding: "16px 20px",
-      flex: 1,
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between"
@@ -65,7 +64,7 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [signalData, setSignalData] = useState([]);
   const [rewardData, setRewardData] = useState([]);
-  const [actionLog, setActionLog] = useState([]); // New feature: keep track of recent actions
+  const [actionLog, setActionLog] = useState([]); 
   const [stats, setStats] = useState({
     compression_ratio: "—",
     reconstruction_error: "—",
@@ -86,20 +85,17 @@ export default function App() {
       const res = await fetch(`${API}/step/${activeSignal}`);
       const d = await res.json();
 
-      // Signal chart downsampling
-      const step = Math.max(1, Math.floor(d.original.length / 128)); // Smoother render
+      const step = Math.max(1, Math.floor(d.original.length / 128)); 
       const pts = [];
       for (let i = 0; i < d.original.length; i += step) {
         pts.push({ i, original: +d.original[i].toFixed(4), reconstructed: +d.reconstructed[i].toFixed(4) });
       }
       setSignalData(pts);
 
-      // Reward & Log
       const newPoint = { ep: d.agent.episode, reward: +d.reward };
-      rewardRef.current = [...rewardRef.current, newPoint].slice(-100); // keep last 100
+      rewardRef.current = [...rewardRef.current, newPoint].slice(-100); 
       setRewardData([...rewardRef.current]);
 
-      // Update Action Log
       setActionLog(prev => [
         { ep: d.agent.episode, wave: d.wavelet, lvl: d.level, th: d.threshold_mode },
         ...prev
@@ -133,17 +129,7 @@ export default function App() {
   const accent = SIGNAL_COLOR[activeSignal];
 
   return (
-    <div style={{
-      height: "100vh",
-      width: "100vw",
-      background: "#050505",
-      color: "#e0e0e0",
-      fontFamily: "'DM Sans', sans-serif",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden"
-    }}>
+    <div className="app-container" style={{ background: "#050505", color: "#e0e0e0", fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -153,10 +139,38 @@ export default function App() {
         button { cursor: pointer; font-family: inherit; outline: none; }
         button:hover { filter: brightness(1.2); }
         button:active { transform: scale(0.98); }
+
+        /* Responsive Layout Grid */
+        .app-container { height: 100vh; display: flex; flex-direction: column; padding: 24px; overflow: hidden; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
+        .app-main { display: flex; gap: 24px; flex: 1; min-height: 0; }
+        .app-sidebar { width: 340px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; padding-right: 4px; }
+        .app-content { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; overflow-y: auto; padding-right: 4px; }
+        .app-stats { display: flex; gap: 16px; flex-shrink: 0; }
+        .stat-card { flex: 1; }
+        .chart-box { flex: 1; min-height: 220px; background: #111; border: 1px solid #222; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; position: relative; }
+
+        /* Mobile Breakpoints */
+        @media (max-width: 900px) {
+          .app-container { height: auto; min-height: 100vh; overflow-y: auto; padding: 16px; }
+          .app-main { flex-direction: column; height: auto; overflow: visible; }
+          .app-sidebar { width: 100%; overflow: visible; padding-right: 0; }
+          .app-content { overflow: visible; padding-right: 0; }
+          .app-stats { flex-wrap: wrap; }
+          .stat-card { flex: 1 1 calc(50% - 16px); } /* 2x2 grid on tablets */
+          .chart-box { min-height: 300px; }
+        }
+
+        @media (max-width: 550px) {
+          .app-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .stat-card { flex: 1 1 100%; } /* Full width vertical stack on phones */
+          .action-buttons { flex-direction: column; }
+          .action-buttons button { width: 100%; }
+        }
       `}</style>
 
       {/* Header */}
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "60px", flexShrink: 0, marginBottom: 16 }}>
+      <header className="app-header">
         <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
           <h1 style={{ fontSize: 24, fontWeight: 500, letterSpacing: "-0.02em", color: "#fff" }}>
             RL-WaveComp
@@ -167,16 +181,16 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#111", padding: "8px 16px", borderRadius: 20, border: "1px solid #222" }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: running ? "#4caf50" : "#f44336", boxShadow: running ? "0 0 10px #4caf50" : "none", transition: "all 0.3s" }} />
           <span style={{ color: running ? "#fff" : "#888", fontSize: 13, fontWeight: 500 }}>{running ? "SYSTEM LIVE" : "SYSTEM PAUSED"}</span>
-          <div style={{ width: 1, height: 16, background: "#333", margin: "0 8px" }} />
-          <span style={{ color: "#aaa", fontSize: 13, fontFamily: "'DM Mono', monospace" }}>EPISODE {stats.episode}</span>
+          <div style={{ width: 1, height: 16, background: "#333", margin: "0 4px" }} />
+          <span style={{ color: "#aaa", fontSize: 13, fontFamily: "'DM Mono', monospace" }}>EP {stats.episode}</span>
         </div>
       </header>
 
       {/* Main App Grid */}
-      <main style={{ display: "flex", gap: 24, flex: 1, minHeight: 0 }}>
+      <main className="app-main">
         
         {/* Left Sidebar (Controls & Context) */}
-        <aside style={{ width: 340, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+        <aside className="app-sidebar">
           
           {/* Signal Selector */}
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, marginBottom: 20 }}>
@@ -198,7 +212,7 @@ export default function App() {
               ))}
             </div>
             
-            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+            <div className="action-buttons" style={{ display: "flex", gap: 8, marginTop: 16 }}>
               <button onClick={() => setRunning(r => !r)} style={{
                 flex: 2, padding: "12px", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 600,
                 background: running ? "#333" : accent, color: running ? "#fff" : "#000", transition: "all 0.2s",
@@ -217,7 +231,7 @@ export default function App() {
           <EpsilonGauge value={stats.epsilon} />
 
           {/* Action Log */}
-          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, minHeight: 180, display: "flex", flexDirection: "column" }}>
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Agent Decision Log</div>
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
               {actionLog.length === 0 ? (
@@ -233,10 +247,10 @@ export default function App() {
         </aside>
 
         {/* Right Content Area (Charts & Stats) */}
-        <section style={{ flex: 1, display: "flex", flexDirection: "column", gap: 20, minWidth: 0 }}>
+        <section className="app-content">
           
           {/* Top Stats Row */}
-          <div style={{ display: "flex", gap: 16, flexShrink: 0 }}>
+          <div className="app-stats">
             <StatCard label="Compression Ratio" value={stats.compression_ratio} unit="×" accent={accent} />
             <StatCard label="Mean Squared Error" value={stats.reconstruction_error} accent="#aaa" />
             <StatCard label="Step Reward" value={stats.reward} accent={stats.reward > 0 ? "#4caf50" : "#ff4d4d"} />
@@ -244,7 +258,7 @@ export default function App() {
           </div>
 
           {/* Signal Chart Container */}
-          <div style={{ flex: 2, background: "#111", border: "1px solid #222", borderRadius: 12, padding: "20px 24px", display: "flex", flexDirection: "column", position: "relative" }}>
+          <div className="chart-box">
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Real-time Signal Reconstruction</div>
             <div style={{ flex: 1, minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -262,7 +276,7 @@ export default function App() {
           </div>
 
           {/* Reward Chart Container */}
-          <div style={{ flex: 1, background: "#111", border: "1px solid #222", borderRadius: 12, padding: "20px 24px", display: "flex", flexDirection: "column", position: "relative" }}>
+          <div className="chart-box">
             <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Q-Learning Convergence</div>
             <div style={{ flex: 1, minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
