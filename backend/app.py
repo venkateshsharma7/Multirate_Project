@@ -94,6 +94,17 @@ def signals():
     return jsonify({"signals": SIGNAL_NAMES})
 
 
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    """Serve the React frontend built static files."""
+    if FRONTEND_DIST.exists():
+        if path != "" and (FRONTEND_DIST / path).exists():
+            return send_from_directory(FRONTEND_DIST, path)
+        return send_from_directory(FRONTEND_DIST, "index.html")
+    return jsonify({"message": "Frontend not built. Run npm run build inside frontend."}), 404
+
+
 if __name__ == "__main__":
     print("Starting Flask server on http://localhost:5000")
     print("Endpoints:")
