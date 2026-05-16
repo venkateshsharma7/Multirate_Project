@@ -1,13 +1,13 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import numpy as np
 import time
+from pathlib import Path
 
-from data import stream_chunk, get_signal_type
-from compress import compress, compute_reward, action_to_params
-from agent import QLearningAgent
+BASE_DIR = Path(__file__).resolve().parents[1]
+FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=str(FRONTEND_DIST), static_url_path="")
 CORS(app)  # allows the React frontend to call this API
 
 agent = QLearningAgent()

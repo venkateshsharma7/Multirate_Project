@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const API = "http://localhost:5000/api";
+const API = "/api";
 
 const SIGNALS = ["ecg", "accelerometer", "temperature"];
 
